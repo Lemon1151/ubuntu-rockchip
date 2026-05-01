@@ -7,4 +7,4 @@ export KERNEL_REPO="https://github.com/Lemon1151/linux-rockchip-ubuntu.git"
 export KERNEL_BRANCH="resolute"
 export KERNEL_FLAVOR="rockchip"
 
-export EXTRA_PPAS="jjriek/rockchip"
+# export EXTRA_PPAS="jjriek/rockchip"
