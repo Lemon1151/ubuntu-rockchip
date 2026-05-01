@@ -122,9 +122,6 @@ fi
 # Generic packages to install
 echo "software-properties-common" > config/package-lists/my.list.chroot
 
-# Required by u-boot-rockchip and rk3588 platforms
-echo "mtd-utils" >> config/package-lists/my.list.chroot
-
 if [ "${PROJECT}" == "ubuntu" ]; then
     # Specific packages to install for ubuntu desktop
     (
