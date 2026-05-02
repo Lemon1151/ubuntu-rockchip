@@ -172,15 +172,15 @@ lb build
 set -eE 
 
 # ==============================================
-# 2. 安装 linux-firmware固件
+# 安装 linux-firmware固件
 # ==============================================
 echo "Installing Armbian firmware..."
 git clone --depth=1 https://gitlab.com/kernel-firmware/linux-firmware linux-firmware
 /bin/cp -Rf linux-firmware/* chroot/usr/lib/firmware/
-rm -rf armbian-fw
+rm -rf linux-firmware
 
 # ==============================================
-# 3. 设置主机名
+# 设置主机名
 # ==============================================
 echo "Setting hostname to ${BOARD}..."
 echo "${BOARD}" > chroot/etc/hostname
@@ -194,7 +194,7 @@ ff02::2     ip6-allrouters
 EOF
 
 # ==============================================
-# 4. 【核心】销毁 Live 模式标记 → 永久系统
+# 【核心】销毁 Live 模式标记 → 永久系统
 # ==============================================
 echo "Disabling live mode permanently..."
 rm -rf chroot/var/lib/livecd-rootfs
@@ -209,21 +209,21 @@ chroot chroot systemctl disable --now livecd-installer.service || true
 chroot chroot systemctl mask livecd-installer.service || true
 
 # ==============================================
-# 5. 创建默认用户 ubuntu / ubuntu
+# 创建默认用户 ubuntu / ubuntu
 # ==============================================
 echo "Creating default user: ubuntu (password: ubuntu)..."
 chroot chroot useradd -m -s /bin/bash -G sudo,audio,video,plugdev,netdev,dialout ubuntu
 echo 'ubuntu:ubuntu' | chroot chroot chpasswd
 
 # ==============================================
-# 6. 设置时区 Asia/Shanghai
+# 设置时区 Asia/Shanghai
 # ==============================================
 echo "Setting timezone to Asia/Shanghai..."
 chroot chroot ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 echo "Asia/Shanghai" > chroot/etc/timezone
 
 # ==============================================
-# 7. 设置 root 密码 + SSH
+# 设置 root 密码 + SSH
 # ==============================================
 echo "Setting root password to 'root' and enabling root SSH..."
 echo 'root:root' | chroot chroot chpasswd
