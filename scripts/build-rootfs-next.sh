@@ -83,34 +83,7 @@ lb config \
     --mirror-binary "http://ports.ubuntu.com" \
     --parent-mirror-binary "http://ports.ubuntu.com" \
     --keyring-packages ubuntu-keyring \
-    --linux-flavours "${KERNEL_FLAVOR}"
-
-if [ "${SUITE}" == "noble" ] || [ "${SUITE}" == "jammy" ]; then
-    # Pin rockchip package archives
-    (
-        echo "Package: *"
-        echo "Pin: release o=LP-PPA-jjriek-rockchip"
-        echo "Pin-Priority: 1001"
-        echo ""
-        echo "Package: *"
-        echo "Pin: release o=LP-PPA-jjriek-rockchip-multimedia"
-        echo "Pin-Priority: 1001"
-    ) > config/archives/extra-ppas.pref.chroot
-fi
-
-if [ "${SUITE}" == "noble" ]; then
-    # Ignore custom ubiquity package (mistake i made, uploaded to wrong ppa)
-    (
-        echo "Package: oem-*"
-        echo "Pin: release o=LP-PPA-jjriek-rockchip-multimedia"
-        echo "Pin-Priority: -1"
-        echo ""
-        echo "Package: ubiquity*"
-        echo "Pin: release o=LP-PPA-jjriek-rockchip-multimedia"
-        echo "Pin-Priority: -1"
-
-    ) > config/archives/extra-ppas-ignore.pref.chroot
-fi
+    --linux-flavours "none"
 
 # Snap packages to install
 (
