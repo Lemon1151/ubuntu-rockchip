@@ -84,6 +84,9 @@ lb config \
     --parent-mirror-binary "http://ports.ubuntu.com" \
     --keyring-packages ubuntu-keyring \
 
+mkdir -p config/apt/apt.conf.d
+echo 'APT::Install-Recommends "false";' > config/apt/apt.conf.d/99no-recommends
+
 # Snap packages to install
 (
     echo "snapd/classic=stable"
