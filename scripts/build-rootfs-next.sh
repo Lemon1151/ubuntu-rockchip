@@ -174,7 +174,7 @@ set -eE
 # ==============================================
 # 安装 linux-firmware固件
 # ==============================================
-echo "Installing Armbian firmware..."
+echo "Installing linux-firmware..."
 git clone --depth=1 https://gitlab.com/kernel-firmware/linux-firmware linux-firmware
 /bin/cp -Rf linux-firmware/* chroot/usr/lib/firmware/
 rm -rf linux-firmware
