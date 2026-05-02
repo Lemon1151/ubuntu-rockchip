@@ -105,18 +105,8 @@ if [ "${PROJECT}" = "ubuntu" ]; then
 ubuntu-desktop-minimal
 localechooser-data
 console-setup
-sudo
-nano
-vim
 htop
-kmod
-kbd
 tzdata
-unzip
-zip
-curl
-wget
-git
 user-setup
 network-manager
 net-tools
@@ -138,17 +128,8 @@ else
     cat >> config/package-lists/my.list.chroot << EOF
 ubuntu-server
 console-setup
-sudo
-nano
-vim
 htop
 kmod
-kbd
-unzip
-zip
-curl
-wget
-git
 tzdata
 user-setup
 network-manager
@@ -175,7 +156,14 @@ lb build
 set -eE 
 
 # ==============================================
-# 安装 linux-firmware固件
+# 先清空 Ubuntu 自带的所有 firmware
+# ==============================================
+echo "Clearing Ubuntu default firmware..."
+rm -rf chroot/usr/lib/firmware
+mkdir -p chroot/usr/lib/firmware
+
+# ==============================================
+# 再安装 linux-firmware固件
 # ==============================================
 echo "Installing linux-firmware..."
 git clone --depth=1 https://gitlab.com/kernel-firmware/linux-firmware linux-firmware
