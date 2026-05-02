@@ -144,7 +144,6 @@ vim
 htop
 kmod
 kbd
-tzdata
 unzip
 zip
 curl
@@ -171,6 +170,8 @@ echo "Installing Armbian firmware..."
 git clone --depth=1 https://github.com/armbian/firmware armbian-fw
 /bin/cp -Rf armbian-fw/* chroot/usr/lib/firmware/
 rm -rf armbian-fw
+
+echo "Building rootfs for ${SUITE} (${FLAVOR})..."
 
 # Build the rootfs
 lb build
