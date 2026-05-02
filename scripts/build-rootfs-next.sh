@@ -95,14 +95,11 @@ lb config \
 echo "software-properties-common" > config/package-lists/my.list.chroot
 
 # =========================================================
-# Next (26.04 / 28.04) package selection
+# 【关键】彻底删除 oem-config、ubiquity，彻底告别 live 模式
 # =========================================================
 if [ "${PROJECT}" = "ubuntu" ]; then
     cat >> config/package-lists/my.list.chroot << EOF
 ubuntu-desktop-minimal
-oem-config-gtk
-ubiquity-frontend-gtk
-ubiquity-slideshow-ubuntu
 localechooser-data
 console-setup
 sudo
@@ -122,7 +119,6 @@ network-manager
 net-tools
 iproute2
 isc-dhcp-client
-linux-firmware
 mesa-vulkan-drivers
 mesa-va-drivers
 alsa-utils
@@ -133,6 +129,7 @@ bluez
 bluetooth
 openssh-server
 fastfetch
+zstd
 EOF
 else
     cat >> config/package-lists/my.list.chroot << EOF
@@ -155,7 +152,6 @@ network-manager
 net-tools
 iproute2
 isc-dhcp-client
-linux-firmware
 mesa-vulkan-drivers
 alsa-utils
 pipewire
@@ -164,13 +160,9 @@ bluez
 bluetooth
 openssh-server
 fastfetch
+zstd
 EOF
 fi
-
-echo "Installing Armbian firmware..."
-git clone --depth=1 https://github.com/armbian/firmware armbian-fw
-/bin/cp -Rf armbian-fw/* chroot/usr/lib/firmware/
-rm -rf armbian-fw
 
 echo "Building rootfs for ${SUITE} (${FLAVOR})..."
 
@@ -180,10 +172,17 @@ lb build
 set -eE 
 
 # ==============================================
-# Auto configure hostname
+# 2. 安装 linux-firmware固件
+# ==============================================
+echo "Installing Armbian firmware..."
+git clone --depth=1 https://gitlab.com/kernel-firmware/linux-firmware linux-firmware
+/bin/cp -Rf linux-firmware/* chroot/usr/lib/firmware/
+rm -rf armbian-fw
+
+# ==============================================
+# 3. 设置主机名
 # ==============================================
 echo "Setting hostname to ${BOARD}..."
-
 echo "${BOARD}" > chroot/etc/hostname
 
 cat > chroot/etc/hosts << EOF
@@ -194,13 +193,39 @@ ff02::1     ip6-allnodes
 ff02::2     ip6-allrouters
 EOF
 
-# =========================================================
-# Unified post-build configuration
-# - Set root password to 'root'
-# - Enable root SSH with password authentication
-# =========================================================
-echo "Setting root password to 'root' and enabling root SSH..."
+# ==============================================
+# 4. 【核心】销毁 Live 模式标记 → 永久系统
+# ==============================================
+echo "Disabling live mode permanently..."
+rm -rf chroot/var/lib/livecd-rootfs
+rm -rf chroot/usr/lib/livecd-rootfs
+rm -f chroot/etc/livecd.conf
+rm -f chroot/lib/systemd/system/multi-user.target.wants/live*
+rm -f chroot/etc/systemd/system/multi-user.target.wants/live*
 
+chroot chroot systemctl disable --now livecd-rootfs.service || true
+chroot chroot systemctl mask livecd-rootfs.service || true
+chroot chroot systemctl disable --now livecd-installer.service || true
+chroot chroot systemctl mask livecd-installer.service || true
+
+# ==============================================
+# 5. 创建默认用户 ubuntu / ubuntu
+# ==============================================
+echo "Creating default user: ubuntu (password: ubuntu)..."
+chroot chroot useradd -m -s /bin/bash -G sudo,audio,video,plugdev,netdev,dialout ubuntu
+echo 'ubuntu:ubuntu' | chroot chroot chpasswd
+
+# ==============================================
+# 6. 设置时区 Asia/Shanghai
+# ==============================================
+echo "Setting timezone to Asia/Shanghai..."
+chroot chroot ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+echo "Asia/Shanghai" > chroot/etc/timezone
+
+# ==============================================
+# 7. 设置 root 密码 + SSH
+# ==============================================
+echo "Setting root password to 'root' and enabling root SSH..."
 echo 'root:root' | chroot chroot chpasswd
 
 chroot chroot sed -i 's/^#*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
@@ -208,19 +233,18 @@ chroot chroot sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication yes/'
 
 chroot chroot systemctl enable ssh
 
-# Tar the entire rootfs
+# ==============================================
+# 打包 rootfs
+# ==============================================
 echo "Listing chroot/ directory before tarring:"
 ls -l chroot/
 
 (cd chroot/ &&  tar -p -c --sort=name --xattrs ./*) | xz -3 -T0 > "ubuntu-${RELASE_VERSION}-${SUITE}-${FLAVOR}-arm64.rootfs.tar.xz"
 
-# 检查当前目录下的文件
 echo "Listing current directory after tarring:"
 ls -l
 
-#将rootfs移动到上级目录
 mv "ubuntu-${RELASE_VERSION}-${SUITE}-${FLAVOR}-arm64.rootfs.tar.xz" ../
 
-# 再次检查文件是否存在于目标目录
 echo "Listing parent directory after moving the file:"
 ls -l ..
