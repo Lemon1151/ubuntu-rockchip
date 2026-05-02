@@ -95,7 +95,7 @@ lb config \
 echo "software-properties-common" > config/package-lists/my.list.chroot
 
 # =========================================================
-# 【关键】彻底删除 oem-config、ubiquity，彻底告别 live 模式
+# Next (26.04 / 28.04) package selection
 # =========================================================
 if [ "${PROJECT}" = "ubuntu" ]; then
     cat >> config/package-lists/my.list.chroot << EOF
