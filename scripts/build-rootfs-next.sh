@@ -181,6 +181,8 @@ echo "Installing linux-firmware..."
 git clone --depth=1 https://gitlab.com/kernel-firmware/linux-firmware linux-firmware
 /bin/cp -Rf linux-firmware/* chroot/usr/lib/firmware/
 rm -rf linux-firmware
+chown -R root:root chroot/usr/lib/firmware
+chmod -R 755 chroot/usr/lib/firmware
 
 # ==============================================
 # 设置主机名
@@ -235,6 +237,9 @@ chroot chroot sed -i 's/^#*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd
 chroot chroot sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
 chroot chroot systemctl enable ssh
+
+chroot chroot apt clean
+rm -rf chroot/var/lib/apt/lists/*
 
 # ==============================================
 # 打包 rootfs
