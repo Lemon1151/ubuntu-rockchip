@@ -99,7 +99,7 @@ echo "software-properties-common" > config/package-lists/my.list.chroot
 # =========================================================
 if [ "${PROJECT}" = "ubuntu" ]; then
     cat >> config/package-lists/my.list.chroot << EOF
-ubuntu-desktop
+ubuntu-desktop-minimal
 oem-config-gtk
 ubiquity-frontend-gtk
 ubiquity-slideshow-ubuntu
@@ -132,6 +132,7 @@ wireplumber
 bluez
 bluetooth
 openssh-server
+fastfetch
 EOF
 else
     cat >> config/package-lists/my.list.chroot << EOF
@@ -162,6 +163,7 @@ wireplumber
 bluez
 bluetooth
 openssh-server
+fastfetch
 EOF
 fi
 
@@ -176,6 +178,21 @@ echo "Building rootfs for ${SUITE} (${FLAVOR})..."
 lb build
 
 set -eE 
+
+# ==============================================
+# Auto configure hostname
+# ==============================================
+echo "Setting hostname to ${BOARD}..."
+
+echo "${BOARD}" > chroot/etc/hostname
+
+cat > chroot/etc/hosts << EOF
+127.0.0.1   localhost
+127.0.1.1   ${BOARD}
+::1         localhost ip6-localhost ip6-loopback
+ff02::1     ip6-allnodes
+ff02::2     ip6-allrouters
+EOF
 
 # =========================================================
 # Unified post-build configuration
