@@ -166,7 +166,7 @@ mkdir -p chroot/usr/lib/firmware
 # 再安装 linux-firmware固件
 # ==============================================
 echo "Installing linux-firmware..."
-git clone --depth=1 https://gitlab.com/kernel-firmware/linux-firmware linux-firmware
+git clone --depth=1 https://github.com/armbian/firmware linux-firmware
 /bin/cp -Rf linux-firmware/* chroot/usr/lib/firmware/
 rm -rf linux-firmware
 chown -R root:root chroot/usr/lib/firmware
