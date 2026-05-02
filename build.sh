@@ -183,7 +183,17 @@ if [ "${ROOTFS_ONLY}" == "Y" ]; then
         usage
         exit 1
     fi
-    ./scripts/build-rootfs.sh
+
+    # ==============================
+    # 稳健版判断：只指定旧版本，未来自动通用
+    # ==============================
+    if [ "${SUITE}" == "jammy" ] || [ "${SUITE}" == "noble" ]; then
+        # 22.04 / 24.04 → PPA 专用脚本
+        ./scripts/build-rootfs.sh
+    else
+        # 26.04 / 28.04 等新版本 → 通用驱动脚本
+        ./scripts/build-rootfs-next.sh
+    fi
     exit 0
 fi
 
