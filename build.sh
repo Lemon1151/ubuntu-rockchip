@@ -183,7 +183,8 @@ if [ "${ROOTFS_ONLY}" == "Y" ]; then
         usage
         exit 1
     fi
-
+    chmod +x ./scripts/build-rootfs-next.sh
+    chmod +x ./scripts/build-rootfs.sh
     # ==============================
     # 稳健版判断：只指定旧版本，未来自动通用
     # ==============================
