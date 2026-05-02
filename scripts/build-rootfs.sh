@@ -122,24 +122,102 @@ fi
 # Generic packages to install
 echo "software-properties-common" > config/package-lists/my.list.chroot
 
-if [ "${PROJECT}" == "ubuntu" ]; then
-    # Specific packages to install for ubuntu desktop
-    (
-        echo "ubuntu-desktop-rockchip"
-        echo "oem-config-gtk"
-        echo "ubiquity-frontend-gtk"
-        echo "ubiquity-slideshow-ubuntu"
-        echo "localechooser-data"
-    ) >> config/package-lists/my.list.chroot
-else
-    # Specific packages to install for ubuntu server
-    echo "ubuntu-server-rockchip" >> config/package-lists/my.list.chroot
+if [ "${SUITE}" = "jammy" ] || [ "${SUITE}" = "noble" ]; then
+
+    if [ "${PROJECT}" = "ubuntu" ]; then
+        # ppa:ubuntu-desktop-rockchip
+        cat >> config/package-lists/my.list.chroot << EOF
+ubuntu-desktop-rockchip
+oem-config-gtk
+ubiquity-frontend-gtk
+ubiquity-slideshow-ubuntu
+localechooser-data
+EOF
+    else
+        ## ppa:ubuntu-server-rockchip
+        echo "ubuntu-server-rockchip" >> config/package-lists/my.list.chroot
+    fi
+
+elif [ "${SUITE}" = "resolute" ]; then
+
+    if [ "${PROJECT}" = "ubuntu" ]; then
+        cat >> config/package-lists/my.list.chroot << EOF
+ubuntu-desktop
+oem-config-gtk
+ubiquity-frontend-gtk
+ubiquity-slideshow-ubuntu
+localechooser-data
+console-setup
+kbd
+tzdata
+user-setup
+network-manager
+net-tools
+iproute2
+isc-dhcp-client
+linux-firmware
+firmware-brcm80211
+firmware-realtek
+mesa-vulkan-drivers
+mesa-va-drivers
+xserver-xorg-video-rockchip
+alsa-utils
+pipewire
+pipewire-pulse
+wireplumber
+bluez
+bluetooth
+openssh-server
+EOF
+    else
+        cat >> config/package-lists/my.list.chroot << EOF
+ubuntu-server
+console-setup
+kbd
+tzdata
+user-setup
+network-manager
+net-tools
+iproute2
+isc-dhcp-client
+linux-firmware
+firmware-brcm80211
+firmware-realtek
+mesa-vulkan-drivers
+mesa-va-drivers
+xserver-xorg-video-rockchip
+alsa-utils
+pipewire
+pipewire-pulse
+wireplumber
+bluez
+bluetooth
+openssh-server
+EOF
+    fi
 fi
 
 # Build the rootfs
 lb build
 
 set -eE 
+
+# =========================================================
+# Unified post-build configuration
+# - Set root password to 'root'
+# - Enable root SSH with password authentication
+# =========================================================
+echo "Setting root password to 'root' and enabling root SSH..."
+
+# 设置 root:root
+echo 'root:root' | chroot chroot chpasswd
+
+# 允许 root 密码 SSH 登录
+chroot chroot sed -i 's/^#*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+chroot chroot sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# 确保 SSH 服务开机自启
+chroot chroot systemctl enable ssh
 
 # Tar the entire rootfs
 echo "Listing chroot/ directory before tarring:"
