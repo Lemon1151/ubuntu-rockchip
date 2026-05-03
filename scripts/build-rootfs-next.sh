@@ -157,8 +157,14 @@ mkdir -p chroot/usr/lib/firmware
 
 
 # ==============================================
-# 安装Linux官方linux-firmware
+# 安装 Armbian 固件 + 官方 linux-firmware 覆盖
 # ==============================================
+echo "Installing Armbian firmware..."
+wget -O armbian-fw.tar.gz https://github.com/armbian/firmware/archive/refs/heads/master.tar.gz
+tar -xf armbian-fw.tar.gz
+cp -Rf firmware-master/* chroot/usr/lib/firmware/
+rm -rf firmware-master armbian-fw.tar.gz
+
 echo "Installing official linux-firmware (overwrite)..."
 wget -O linux-fw.tar.gz https://gitlab.com/kernel-firmware/linux-firmware/-/archive/main/linux-firmware-main.tar.gz
 tar -xf linux-fw.tar.gz
