@@ -145,6 +145,11 @@ echo "Building rootfs for ${SUITE} (${FLAVOR})..."
 # Build the rootfs
 lb build
 
+test -d chroot || {
+    echo "ERROR: chroot directory is missing after lb build!"
+    exit 1
+}
+
 set -eE 
 
 # ==============================================
@@ -174,6 +179,14 @@ chown -R root:root chroot/usr/lib/firmware
 chmod -R 755 chroot/usr/lib/firmware
 
 # ==============================================
+# 修复 chroot 环境：挂载 proc/sys/dev
+# ==============================================
+mount -t proc proc chroot/proc
+mount -t sysfs sys chroot/sys
+mount --bind /dev chroot/dev
+mount --bind /dev/pts chroot/dev/pts
+
+# ==============================================
 # 安全卸载冗余包
 # ==============================================
 echo "Purging unused packages..."
@@ -192,6 +205,14 @@ chroot chroot apt-get autoremove -y
 chroot chroot apt-get clean
 chroot chroot apt-get purge -y snapd
 chroot chroot apt-mark hold snapd
+
+# ==============================================
+# 卸载虚拟文件系统
+# ==============================================
+umount -R chroot/proc || true
+umount -R chroot/sys || true
+umount -R chroot/dev/pts || true
+umount -R chroot/dev || true
 
 # ==============================================
 # 设置主机名
