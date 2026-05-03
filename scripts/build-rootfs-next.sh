@@ -191,6 +191,7 @@ mount --bind /dev/pts chroot/dev/pts
 # ==============================================
 echo "Purging unused snap packages..."
 chroot chroot apt-get purge -y snapd
+chroot chroot apt-get purge -y firefox
 chroot chroot apt-mark hold snapd
 
 # 自动清理无用依赖
