@@ -84,16 +84,6 @@ lb config \
     --parent-mirror-binary "http://ports.ubuntu.com" \
     --keyring-packages ubuntu-keyring \
 
-mkdir -p config/apt/apt.conf.d
-echo 'APT::Install-Recommends "false";' > config/apt/apt.conf.d/99no-recommends
-
-# Snap packages to install
-(
-    echo "snapd/classic=stable"
-    echo "core22/classic=stable"
-    echo "lxd/classic=stable"
-) > config/seeded-snaps
-
 # Generic packages to install
 echo "software-properties-common" > config/package-lists/my.list.chroot
 
@@ -105,6 +95,7 @@ if [ "${PROJECT}" = "ubuntu" ]; then
 ubuntu-desktop-minimal
 localechooser-data
 console-setup
+nano
 htop
 tzdata
 user-setup
@@ -128,6 +119,7 @@ else
     cat >> config/package-lists/my.list.chroot << EOF
 ubuntu-server
 console-setup
+nano
 htop
 kmod
 tzdata
@@ -156,21 +148,52 @@ lb build
 set -eE 
 
 # ==============================================
-# 先清空 Ubuntu 自带的所有 firmware
+# 清空 Ubuntu 默认固件
 # ==============================================
 echo "Clearing Ubuntu default firmware..."
 rm -rf chroot/usr/lib/firmware
 mkdir -p chroot/usr/lib/firmware
 
 # ==============================================
-# 再安装 linux-firmware固件
+# 安装 Armbian 固件 + 官方 linux-firmware 覆盖
 # ==============================================
-echo "Installing linux-firmware..."
-git clone --depth=1 https://github.com/armbian/firmware linux-firmware
-/bin/cp -Rf linux-firmware/* chroot/usr/lib/firmware/
-rm -rf linux-firmware
+echo "Installing Armbian firmware..."
+wget -O armbian-fw.tar.gz https://github.com/armbian/firmware/archive/refs/heads/master.tar.gz
+tar -xf armbian-fw.tar.gz
+cp -Rf firmware-master/* chroot/usr/lib/firmware/
+rm -rf firmware-master armbian-fw.tar.gz
+
+echo "Installing official linux-firmware (overwrite)..."
+wget -O linux-fw.tar.gz https://gitlab.com/kernel-firmware/linux-firmware/-/archive/main/linux-firmware-main.tar.gz
+tar -xf linux-fw.tar.gz
+cp -Rf linux-firmware-main/* chroot/usr/lib/firmware/
+rm -rf linux-firmware-main linux-fw.tar.gz
+
+echo "Fix firmware permissions..."
 chown -R root:root chroot/usr/lib/firmware
 chmod -R 755 chroot/usr/lib/firmware
+
+# ==============================================
+# 安全卸载冗余包
+# ==============================================
+echo "Purging unused packages..."
+chroot chroot apt-get purge -y \
+  man-db manpages manpages-dev \
+  texinfo info \
+  docbook-xml docbook-xsl \
+  yelp yelp-xsl \
+  gnome-user-docs ubuntu-docs \
+  hunspell-* myspell-* aspell-* \
+  systemd-coredump systemd-bootchart \
+  gdb strace ltrace valgrind \
+  "*-dbg" "*-dbgsym" \
+  libreoffice-*
+
+# 自动清理无用依赖
+chroot chroot apt-get autoremove -y
+chroot chroot apt-get clean
+chroot chroot apt-get purge -y snapd
+chroot chroot apt-mark hold snapd
 
 # ==============================================
 # 设置主机名
