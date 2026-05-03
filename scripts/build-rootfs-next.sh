@@ -187,19 +187,9 @@ mount --bind /dev chroot/dev
 mount --bind /dev/pts chroot/dev/pts
 
 # ==============================================
-# 安全卸载冗余包
+# 卸载snap
 # ==============================================
-echo "Purging unused packages..."
-chroot chroot apt-get purge -y \
-  man-db manpages manpages-dev \
-  texinfo info \
-  docbook-xml docbook-xsl \
-  yelp yelp-xsl \
-  gnome-user-docs ubuntu-docs \
-  systemd-coredump systemd-bootchart \
-  gdb strace ltrace valgrind \
-  "*-dbg" "*-dbgsym" \
-
+echo "Purging unused snap packages..."
 chroot chroot apt-get purge -y snapd
 chroot chroot apt-mark hold snapd
 
