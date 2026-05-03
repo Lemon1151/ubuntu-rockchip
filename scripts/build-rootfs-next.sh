@@ -145,32 +145,30 @@ echo "Building rootfs for ${SUITE} (${FLAVOR})..."
 # Build the rootfs
 lb build
 
-test -d chroot || {
-    echo "ERROR: chroot directory is missing after lb build!"
-    exit 1
-}
-
 set -eE 
 
 # ==============================================
-# 清空 Ubuntu 默认固件
+# 清空Ubuntu默认firmware
+# Ubuntu自带的firmware固件驱动是zst压缩格式
 # ==============================================
 echo "Clearing Ubuntu default firmware..."
 rm -rf chroot/usr/lib/firmware
 mkdir -p chroot/usr/lib/firmware
 
-# ==============================================
-# 安装 Armbian 固件 + 官方 linux-firmware 覆盖
-# ==============================================
-echo "Installing Armbian firmware..."
-wget -O armbian-fw.tar.gz https://github.com/armbian/firmware/archive/refs/heads/master.tar.gz
-tar -xf armbian-fw.tar.gz
-cp -Rf firmware-master/* chroot/usr/lib/firmware/
-rm -rf firmware-master armbian-fw.tar.gz
 
+# ==============================================
+# 安装Linux官方linux-firmware
+# ==============================================
 echo "Installing official linux-firmware (overwrite)..."
 wget -O linux-fw.tar.gz https://gitlab.com/kernel-firmware/linux-firmware/-/archive/main/linux-firmware-main.tar.gz
 tar -xf linux-fw.tar.gz
+cd linux-firmware-main
+
+# ==============================================
+# 删除 x86 独显 / 计算卡，缩小rootfs体积
+# ==============================================
+rm -rf nvidia amdgpu radeon amdnpu amdtee i915 intel
+cd ..
 cp -Rf linux-firmware-main/* chroot/usr/lib/firmware/
 rm -rf linux-firmware-main linux-fw.tar.gz
 
@@ -178,33 +176,9 @@ echo "Fix firmware permissions..."
 chown -R root:root chroot/usr/lib/firmware
 chmod -R 755 chroot/usr/lib/firmware
 
-# ==============================================
-# 修复 chroot 环境：挂载 proc/sys/dev
-# ==============================================
-mount -t proc proc chroot/proc
-mount -t sysfs sys chroot/sys
-mount --bind /dev chroot/dev
-mount --bind /dev/pts chroot/dev/pts
-
-# ==============================================
-# 卸载snap
-# ==============================================
-echo "Purging unused snap packages..."
-chroot chroot apt-get purge -y snapd
-chroot chroot apt-get purge -y firefox
-chroot chroot apt-mark hold snapd
-
-# 自动清理无用依赖
-chroot chroot apt-get autoremove -y
-chroot chroot apt-get clean
-
-# ==============================================
-# 卸载虚拟文件系统
-# ==============================================
-umount -R chroot/proc || true
-umount -R chroot/sys || true
-umount -R chroot/dev/pts || true
-umount -R chroot/dev || true
+# =======锁住firmware，防止执行apt更新覆盖=======
+echo "Locking linux-firmware..."
+chroot chroot apt-mark hold linux-firmware
 
 # ==============================================
 # 设置主机名
