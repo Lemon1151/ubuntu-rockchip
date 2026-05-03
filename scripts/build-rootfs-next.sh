@@ -183,11 +183,9 @@ chroot chroot apt-get purge -y \
   docbook-xml docbook-xsl \
   yelp yelp-xsl \
   gnome-user-docs ubuntu-docs \
-  hunspell-* myspell-* aspell-* \
   systemd-coredump systemd-bootchart \
   gdb strace ltrace valgrind \
   "*-dbg" "*-dbgsym" \
-  libreoffice-*
 
 # 自动清理无用依赖
 chroot chroot apt-get autoremove -y
