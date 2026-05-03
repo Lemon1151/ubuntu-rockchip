@@ -200,11 +200,12 @@ chroot chroot apt-get purge -y \
   gdb strace ltrace valgrind \
   "*-dbg" "*-dbgsym" \
 
+chroot chroot apt-get purge -y snapd
+chroot chroot apt-mark hold snapd
+
 # 自动清理无用依赖
 chroot chroot apt-get autoremove -y
 chroot chroot apt-get clean
-chroot chroot apt-get purge -y snapd
-chroot chroot apt-mark hold snapd
 
 # ==============================================
 # 卸载虚拟文件系统
