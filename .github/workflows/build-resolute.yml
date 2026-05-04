@@ -1,4 +1,4 @@
-name: Build resolute
+name: Build Resolute
 
 on:
   workflow_dispatch:
