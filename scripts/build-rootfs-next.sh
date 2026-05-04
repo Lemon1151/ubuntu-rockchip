@@ -146,11 +146,26 @@ else
     "
 fi
 
+chroot ${CHROOT_DIR} apt install -y ${PKGS}
+
+# ==================== 中文本地化环境 ====================
+chroot "${CHROOT_DIR}" apt install -y locales language-pack-zh-hans fonts-noto-cjk
+
+# 生成中文 locale
+chroot "${CHROOT_DIR}" locale-gen zh_CN.UTF-8
+
+# 全局默认中文
+chroot "${CHROOT_DIR}" update-locale LANG=zh_CN.UTF-8 LC_ALL=zh_CN.UTF-8
+
+# 写入环境变量
+echo "LANG=zh_CN.UTF-8" >> "${CHROOT_DIR}/etc/environment"
+echo "LC_ALL=zh_CN.UTF-8" >> "${CHROOT_DIR}/etc/environment"
+
 # =========================================================
 # 启用必备服务（chroot 必须手动开启）
 # =========================================================
 chroot "${CHROOT_DIR}" systemctl enable ssh
-chroot "${CHROOT_DIR}" systemctl enable systemd-resolved
+chroot ${CHROOT_DIR} systemctl enable systemd-resolved || true
 
 if [ "${PROJECT}" = "ubuntu" ]; then
     chroot "${CHROOT_DIR}" systemctl enable NetworkManager
