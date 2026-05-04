@@ -36,7 +36,7 @@ fi
 # =========================================================
 # 下载 ubuntu-base（自动识别最新点发布）
 # =========================================================
-BASE_URL="https://cdimage.ubuntu.com/ubuntu-base/releases/${RELASE_VERSION}/release/"
+BASE_URL="https://cdimage.ubuntu.com/ubuntu-base/releases/${RELASE_VERSION}/release"
 CHECKSUM="SHA256SUMS"
 
 if [[ ! -f ${CHECKSUM} ]]; then
@@ -47,7 +47,7 @@ fi
 BASE_TAR=$(
     grep "base-arm64.tar.gz$" "${CHECKSUM}" \
     | awk '{print $2}' \
-    | sed -E 's/^ubuntu-base-([0-9]+\.[0-9]+(\.[0-9]+)?)-base-arm64\.tar\.gz/\1 &/' \
+    | sed -E 's/^ubuntu-base-([0-9]+\.[0-9]+(-base)?)-arm64\.tar\.gz/\1 &/'
     | sort -V \
     | tail -n1 \
     | awk '{print $2}'
