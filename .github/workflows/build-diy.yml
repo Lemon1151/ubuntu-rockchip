@@ -242,7 +242,7 @@ jobs:
             - noble:kernel_6.1 
             - resolute:kernel_7.0
             - suite: server_ desktop
-            - Default credentials:root:root and ubuntu:ubuntu
+            - Default credentials:'root:root' and 'ubuntu:ubuntu'
             - SSH is enabled by default, and root login is permitted.
             - **Important:** Upon first login, you must change the passwords for both the `root` and `ubuntu` accounts.   
           draft: false  
