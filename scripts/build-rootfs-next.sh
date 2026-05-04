@@ -173,7 +173,8 @@ cd linux-firmware-main
 # ==============================================
 # 删除 x86 独显 / 计算卡，缩小rootfs体积
 # ==============================================
-rm -rf nvidia amdgpu radeon amdnpu amdtee i915 intel
+rm -rf nvidia amdgpu radeon amdnpu amdtee i915
+rm -rf intel/avs intel/catpt intel/dsp* intel/fw_sst* intel/ice intel/ipu intel/ish intel/qat intel/vpu intel/vsc
 cd ..
 cp -Rf linux-firmware-main/* chroot/usr/lib/firmware/
 rm -rf linux-firmware-main linux-fw.tar.gz
