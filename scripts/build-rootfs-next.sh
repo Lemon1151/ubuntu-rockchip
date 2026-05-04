@@ -277,7 +277,6 @@ chroot ${CHROOT_DIR} systemctl enable ssh
 chroot ${CHROOT_DIR} apt clean
 rm -rf ${CHROOT_DIR}/var/lib/apt/lists/*
 rm -rf ${CHROOT_DIR}/tmp/*
-rm -f ${CHROOT_DIR}/etc/resolv.conf
 
 set -eE
 
