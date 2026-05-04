@@ -213,19 +213,19 @@ jobs:
         shell: bash
         run: sudo ./build.sh --board=${{ matrix.board }} --suite=${{ matrix.suite }} --flavor=${{ matrix.flavor }}
 
-      - name: Generate tag and name based on build year and month
-        id: generate_tag
-        run: |
+      # - name: Generate tag and name based on build year and month
+        # id: generate_tag
+        # run: |
           # 使用当前年份和月份生成版本号
-          echo "::set-output name=build_tag::$(date +Ubuntu-%Y-%m)"
-          echo "::set-output name=build_name::$(date +Ubuntu-%Y-%m)"
+          # echo "::set-output name=build_tag::$(date +Ubuntu-%Y-%m)"
+          # echo "::set-output name=build_name::$(date +Ubuntu-%Y-%m)"
 
       - name: Upload
         if: success() 
         uses: ncipollo/release-action@main
         with:  
-          tag: "${{ steps.generate_tag.outputs.build_tag }}"  
-          name: "${{ steps.generate_tag.outputs.build_name }}"  
+          tag: "Ubuntu_v2.5.0"  
+          name: "Ubuntu_v2.5.0"  
           artifacts: "images/ubuntu-*-${{ matrix.suite }}-*-arm64-${{ matrix.board }}.*"  
           allowUpdates: true 
           removeArtifacts: false 
@@ -236,8 +236,10 @@ jobs:
             - jammy:kernel_5.10
             - noble:kernel_6.1 
             - resolute:kernel_7.0
-            - Suite: server_ desktop
-            - The predefined user is ubuntu and the password is ubuntu   
+            - suite: server_ desktop
+            - Default credentials:'root:root' and 'ubuntu:ubuntu'
+            - SSH is enabled by default, and root login is permitted.
+            - **Important:** Upon first login, you must change the passwords for both the `root` and `ubuntu` accounts.   
           draft: false  
           prerelease: false  
 
