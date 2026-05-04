@@ -107,10 +107,9 @@ chroot ${CHROOT_DIR} apt update && apt upgrade -y
 # =========================================================
 if [ "${PROJECT}" = "ubuntu" ]; then
     PKGS="
-      ubuntu-desktop-minimal
+      ubuntu-desktop
       localechooser-data
       console-setup
-      firefox
       sudo
       nano
       vim
@@ -287,7 +286,4 @@ ls -l ${CHROOT_DIR}/
 echo "Listing current directory after tarring:"
 ls -l
 
-mv "${ROOTFS}" ..
-
 echo "Listing parent directory after moving the file:"
-ls -l ..
