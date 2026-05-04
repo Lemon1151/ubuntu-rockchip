@@ -100,42 +100,23 @@ if [ "${PROJECT}" = "ubuntu" ]; then
     PKGS="
       ubuntu-desktop
       localechooser-data
-      console-setup
       firefox
       sudo
       nano
       vim
       htop
-      kmod
-      kbd
-      tzdata
-      unzip
-      zip
       curl
       wget
       git
-      user-setup
-      network-manager
-      net-tools
-      iproute2
-      isc-dhcp-client
-      mesa-vulkan-drivers
-      mesa-va-drivers
-      alsa-utils
-      pipewire
-      pipewire-pulse
-      wireplumber
-      bluez
-      bluetooth
-      openssh-server
       fastfetch
       zstd
+      unzip
+      zip
     "
 else
     PKGS="
       ubuntu-server
       localechooser-data
-      console-setup
       sudo
       nano
       vim
@@ -148,8 +129,6 @@ else
       curl
       wget
       git
-      user-setup
-      network-manager
       net-tools
       iproute2
       isc-dhcp-client
@@ -167,7 +146,36 @@ else
     "
 fi
 
-chroot ${CHROOT_DIR} apt install -y --no-install-recommends ${PKGS}
+# =========================================================
+# 启用必备服务（chroot 必须手动开启）
+# =========================================================
+chroot "${CHROOT_DIR}" systemctl enable ssh
+chroot "${CHROOT_DIR}" systemctl enable systemd-resolved
+
+if [ "${PROJECT}" = "ubuntu" ]; then
+    chroot "${CHROOT_DIR}" systemctl enable NetworkManager
+else
+    chroot "${CHROOT_DIR}" systemctl enable systemd-networkd
+fi
+
+# =========================================================
+# 仅服务器版：netplan 自动网络配置
+# =========================================================
+if [ "${PROJECT}" != "ubuntu" ]; then
+cat > "${CHROOT_DIR}/etc/netplan/00-auto-eth.yaml" <<EOF
+network:
+  renderer: networkd
+  ethernets:
+    all-usb-eth:
+      match:
+        name: en*
+      dhcp4: true
+      dhcp6: true
+      optional: true
+  version: 2
+EOF
+chmod 600 "${CHROOT_DIR}/etc/netplan/00-auto-eth.yaml"
+fi
 
 # =========================================================
 # 安装 linux-firmware（手动）
