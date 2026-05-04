@@ -9,16 +9,9 @@ on:
         default: 'rock-5t'
         type: choice
         options:
-          - aio-3588l
-          - armsom-aim7
-          - armsom-sige5
           - armsom-sige7
           - armsom-w3
           - cyber3588-aib
-          - indiedroid-nova
-          - lubancat-4
-          - mixtile-blade3
-          - mixtile-core3588e
           - nanopc-t6
           - nanopi-r6c
           - nanopi-r6s
@@ -30,8 +23,6 @@ on:
           - orangepi-5b
           - orangepi-cm5
           - radxa-cm5-io
-          - radxa-cm5-rpi-cm4-io
-          - radxa-nx5-io
           - radxa-zero3
           - roc-rk3588s-pc
           - rock-5-itx
@@ -39,7 +30,6 @@ on:
           - rock-5b
           - rock-5b-plus
           - rock-5c
-          - rock-5d
           - rock-5t
           - turing-rk1
       suite:
