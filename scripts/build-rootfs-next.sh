@@ -34,7 +34,7 @@ if [[ -f ${ROOTFS} ]]; then
 fi
 
 # =========================================================
-# 下载 ubuntu-base（自动选择该目录里最新的点发布）
+# 下载 ubuntu-base（自动选择 release 目录下最新的点发布）
 # =========================================================
 BASE_URL="https://cdimage.ubuntu.com/ubuntu-base/releases/${RELASE_VERSION}/release"
 CHECKSUM="SHA256SUMS"
@@ -44,9 +44,9 @@ if [[ ! -f ${CHECKSUM} ]]; then
     wget -O "${CHECKSUM}" "${BASE_URL}/${CHECKSUM}"
 fi
 
-# 从该目录的 SHA256SUMS 里，匹配 arm64 base 包，并按版本号取最新的
+# 匹配: ubuntu-base-<版本>-base-arm64.tar.gz（两个 base）
 BASE_TAR=$(
-    awk -v arch="arm64" '$2 ~ "^ubuntu-base-" arch "\.tar\.gz$" {print $2}' "${CHECKSUM}" \
+    awk -v arch="arm64" '$2 ~ "^ubuntu-base-[0-9]+\\.[0-9]+(\\.[0-9]+)?-base-" arch "\\.tar\\.gz$" {print $2}' "${CHECKSUM}" \
     | sort -V \
     | tail -n1
 )
@@ -58,7 +58,6 @@ fi
 
 echo "Selected ubuntu-base: ${BASE_TAR}"
 
-# 下载 base tarball（如果本地没有）
 if [[ ! -f ${BASE_TAR} ]]; then
     wget -O "${BASE_TAR}" "${BASE_URL}/${BASE_TAR}"
 fi
