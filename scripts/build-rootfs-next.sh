@@ -232,10 +232,20 @@ chroot ${CHROOT_DIR} apt-mark hold linux-firmware 2>/dev/null || true
 # =========================================================
 # 主机名 / hosts
 # =========================================================
-echo "${BOARD}" > ${CHROOT_DIR}/etc/hostname
+
+# 防呆：BOARD 未传入时给出提示
+if [ -z "${BOARD}" ]; then
+    echo "Warning: BOARD is not set, using default hostname: rockchip"
+fi
+
+# 重要：给一个默认值，确保永远不会为空
+FINAL_HOSTNAME="${BOARD:-rockchip}"
+
+# 写入主机名 & hosts
+echo "${FINAL_HOSTNAME}" > "${CHROOT_DIR}/etc/hostname"
 cat > ${CHROOT_DIR}/etc/hosts << EOF
 127.0.0.1   localhost
-127.0.1.1   ${BOARD}
+127.0.1.1   ${FINAL_HOSTNAME}
 ::1         localhost ip6-localhost ip6-loopback
 ff02::1     ip6-allnodes
 ff02::2     ip6-allrouters
