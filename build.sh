@@ -193,7 +193,7 @@ if [ "${ROOTFS_ONLY}" == "Y" ]; then
         ./scripts/build-rootfs.sh
     else
         # 26.04 / 28.04 等新版本 → 通用驱动脚本
-        BOARD="${BOARD}" ./scripts/build-rootfs-next.sh
+        ./scripts/build-rootfs-next.sh
     fi
     exit 0
 fi
