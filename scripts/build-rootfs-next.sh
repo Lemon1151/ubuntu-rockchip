@@ -242,6 +242,15 @@ ff02::2     ip6-allrouters
 EOF
 
 # =========================================================
+# 禁止 cloud-init 覆盖主机名（Ubuntu 26.04 必须）
+# =========================================================
+mkdir -p "${CHROOT_DIR}/etc/cloud/cloud.cfg.d"
+cat > "${CHROOT_DIR}/etc/cloud/cloud.cfg.d/99-no-hostname-override.cfg" << EOF
+manage_hostname: false
+preserve_hostname: true
+EOF
+
+# =========================================================
 # 增强：root 串口登录
 # =========================================================
 echo "Adding securetty for root login..."
