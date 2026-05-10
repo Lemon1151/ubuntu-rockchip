@@ -6,7 +6,7 @@ on:
       board:
         description: 'Board to build'
         required: true
-        default: 'rock-5t'
+        default: 'all'
         type: choice
         options:
           - all
