@@ -34,6 +34,7 @@ on:
           - radxa-nx5-io
           - radxa-zero3
           - roc-rk3588s-pc
+          - rock-4d
           - rock-5-itx
           - rock-5a
           - rock-5b
