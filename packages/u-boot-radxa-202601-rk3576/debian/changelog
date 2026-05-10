@@ -1,5 +1,5 @@
-u-boot-rk3576 (2017.09+20260422.git6e378f44-1) jammy; urgency=medium
+u-boot-radxa-202601-rk3576 (2017.09+20260422.git6e378f44-1) jammy; urgency=medium
 
   * Initial packaging.
 
- -- Joshua Riek <jjriek@verizon.net>  Sat, 06 Jul 2024 12:59:47 -0400
+  -- Lemon1151 <smile1151@foxmail.com>  Sun, 10 May 2026 21:25:50 -0400
