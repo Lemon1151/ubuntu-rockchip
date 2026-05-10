@@ -169,7 +169,6 @@ jobs:
         board: ${{ github.event.inputs.board == 'all' && fromJSON('[
             "aio-3588l",
             "armsom-aim7",
-            "armsom-sige5",
             "armsom-sige7",
             "armsom-w3",
             "cyber3588-aib",
@@ -195,10 +194,6 @@ jobs:
             "rock-5b-plus",
             "rock-5c",
             "rock-5d",
-            "rock-5t",
-            "smart-am60",
-            "som3588-cat",
-            "toybrick-d0",
             "turing-rk1"
             ]') || fromJSON(format('["{0}"]', github.event.inputs.board)) }}
         flavor: ['${{ github.event.inputs.flavor }}']
