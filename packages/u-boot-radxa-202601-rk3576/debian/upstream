@@ -1,4 +1,4 @@
-GIT=https://github.com/radxa/u-boot.git
-COMMIT=2742c75cc288537cdd720391a557b7dcf035b240
+GIT=https://github.com/Lemon1151/u-boot-radxa.git
+COMMIT=ac428ee572440198d3fc35547bea1d83f005ad84
 BRANCH=next-dev-v2026.01
 VERSION=2017.09+20260422.git6e378f44
